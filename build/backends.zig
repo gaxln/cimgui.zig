@@ -11,6 +11,7 @@ const flags_size = utils.flags_size;
 pub const Renderer = enum {
     Vulkan,
     OpenGL3,
+    WebGPU,
 };
 
 pub const Platform = enum {
@@ -55,6 +56,30 @@ pub fn backendOptions(toolbox: *Toolbox, builder: *std.Build, lib: *std.Build.St
                 });
 
                 lib.root_module.addImport("gl", gl_bindings);
+            },
+            .WebGPU => {
+                const wgpu_native_dep = builder.dependency("wgpu_native_zig", .{
+                    .target = target.*,
+                    .optimize = optimize.*,
+                });
+
+                const original_headers_dir = wgpu_native_dep.namedWriteFiles("include").getDirectory();
+
+                const custom_headers = builder.addNamedWriteFiles("custom_wgpu_headers");
+
+                _ = custom_headers.addCopyFile(original_headers_dir.path(builder, "webgpu.h"), // <-- Obtienes el archivo de la ruta original
+                    "webgpu/webgpu.h" // <-- Lo copias a la ruta que necesitas
+                );
+
+                const final_headers_dir = custom_headers.getDirectory();
+
+                lib.addIncludePath(final_headers_dir);
+
+                lib.installHeadersDirectory(final_headers_dir, "", .{}); // La segunda ruta es opcional
+                                                                         //
+                try flags.append("-DIMGUI_IMPL_WEBGPU_BACKEND_WGPU");
+                try toolbox.addSource(lib, path.getBackends(), "imgui_impl_wgpu.cpp", flags.slice());
+                try toolbox.addSource(lib, path.getBackends(), "dcimgui_impl_wgpu.cpp", flags.slice());
             },
         }
     } else std.log.warn("Unspecified renderer backend", .{});

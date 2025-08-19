@@ -22,6 +22,10 @@
             .url = "git+https://github.com/tiawl/vulkan.zig?ref=v1.4.325#6b13208e52d4bcc1747d9fd19bc8a0e32f08bc74",
             .hash = "vulkan_zig-1.0.0-p2wg3mORFgGnecDI2SBcppC1jYAESjNezPPlXXPrZiV6",
         },
+        .wgpu_native_zig = .{
+            .url = "git+https://github.com/bronter/wgpu_native_zig.git?ref=expose-header-files#74c9d56f85115ebd93486e1ceeee3dd6f25abfe9",
+            .hash = "wgpu_native_zig-6.5.0-B9jeDFp0AwC1RvHu0MeheQYpAeHZjwrgrFMMRBvJr2J8",
+        },
     },
     .minimum_zig_version = "0.14.1",
     .fingerprint = 0x4e4978d2929b7bd9,
